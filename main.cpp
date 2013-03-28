@@ -3,7 +3,7 @@
 
 //main method
 
-int main(int argc, char** argv) {
+int main() {
 	try {
 		OgreSkeleton* skeleton = new OgreSkeleton("Difference Engine");
 		//while the window isn't closed
