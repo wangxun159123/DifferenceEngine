@@ -1,3 +1,4 @@
+//Opens a window, based off mad marx tutorial 2
 //inlude our skeleton file
 #include "OgreSkeleton.h"
 
