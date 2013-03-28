@@ -10,6 +10,7 @@ DifferenceEngine: $(OBJ_FILES)
 	g++ -o $@ $^ $(CXX_LDFLAGS) $(LIBRARIES)
 
 obj/%.o: %.cpp
+	mkdir -p obj
 	g++ $(CXX_CFLAGS) -c -o $@ $<
 	
 clean:
