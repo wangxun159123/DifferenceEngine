@@ -1,4 +1,4 @@
-//Viewport and camera based of mad marx tutorial 3
+//Viewport and camera based of mad marx tutorial 4
 //inlude our skeleton file
 #include "OgreSkeleton.h"
 
