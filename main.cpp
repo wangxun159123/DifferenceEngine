@@ -54,7 +54,7 @@ int main() {
         //load all the files
         rgMgr.loadResourceGroup(resourceGroupName);
         //amount of entities to display
-        int entityNumber = 5;
+        const int entityNumber = 5;
         SceneNode* nodes[entityNumber];
         for (int iter = 0; iter < entityNumber; iter++) {
             //the entity loaded from the Cube.mesh file
