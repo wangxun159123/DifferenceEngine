@@ -1,4 +1,4 @@
-//Lighting based off mad marx tutorial 6
+//Loading materials based off mad marx tutorial 7
 //include our skeleton file
 #include "OgreSkeleton.h"
 
@@ -55,7 +55,7 @@ int main() {
             //directional light
             light->setType(Light::LT_DIRECTIONAL);
             //red light
-            light->setDiffuseColour(0.8f, 0.3f, 0.3f);
+            light->setDiffuseColour(1.0f, 1.0f, 1.0f);
             //colour of reflection (white)
             light->setSpecularColour(1.0f, 1.0f, 1.0f);
             //attach light to scene node
@@ -63,33 +63,135 @@ int main() {
             //set the ambient lighting for the scene (dull grey)
             scene->setAmbientLight(ColourValue(0.2f, 0.2f, 0.2f, 1.0f));
         }
+        //create a resource group called entities
+        String resourceGroupName = "entities";
         {
             //Get the singleton for the resource group manager class
             ResourceGroupManager& rgMgr = ResourceGroupManager::getSingleton();
-            //create a resource group called meshes
-            String resourceGroupName = "meshes";
+            //create the resource group
             rgMgr.createResourceGroup(resourceGroupName);
-            //tell the resource group which directory to look in
+            //tell the resource group which directories to look in
+            rgMgr.addResourceLocation("./media/textures", "FileSystem", resourceGroupName, false);
             rgMgr.addResourceLocation("./media/meshes", "FileSystem", resourceGroupName, false);
             //parse any scripts in the resource group
             rgMgr.initialiseResourceGroup(resourceGroupName);
             //load all the files
             rgMgr.loadResourceGroup(resourceGroupName);
         }
+        //Get the singleton for the material manager class
+        MaterialManager& materialManager = MaterialManager::getSingleton();
+        {
+            //create a material
+            MaterialPtr material = materialManager.create("M_NoLighting", resourceGroupName);
+            //get the first technique (rendering method) in the material
+            Technique* firstTechnique = material->getTechnique(0);
+            //get the first pass (layer) in the technique
+            Pass* firstPass = firstTechnique->getPass(0);
+            //disable lighting
+            firstPass->setLightingEnabled(false);
+        }
+        {
+            //create a material
+            MaterialPtr material = materialManager.create("M_NoLighting+OneTexture", resourceGroupName);
+            //get the first technique (rendering method) in the material
+            Technique* firstTechnique = material->getTechnique(0);
+            //get the first pass (layer) in the technique
+            Pass* firstPass = firstTechnique->getPass(0);
+            //disable lighting
+            firstPass->setLightingEnabled(false);
+            //create a texture unit
+            TextureUnitState* textureUnit = firstPass->createTextureUnitState();
+            //set the file to use for the texture
+            textureUnit->setTextureName("Fur.png", TEX_TYPE_2D);
+            textureUnit->setTextureCoordSet(0);
+        }
+        {
+            //create a material
+            MaterialPtr material = materialManager.create("M_LightingColour", resourceGroupName);
+            //get the first technique (rendering method) in the material
+            Technique* firstTechnique = material->getTechnique(0);
+            //get the first pass (layer) in the technique
+            Pass* firstPass = firstTechnique->getPass(0);
+            //enable lighting
+            firstPass->setLightingEnabled(true);
+            //emit a faint red light
+            firstPass->setSelfIllumination(ColourValue(0.1f, 0.0f, 0.0f));
+            //set colour of object
+            firstPass->setDiffuse(ColourValue(1.0f, 0.4f, 0.4f, 1.0f));
+            //set ambient colour
+            firstPass->setAmbient(ColourValue(0.4f, 0.1f, 0.1f, 1.0f));
+            //reflect the sun
+            firstPass->setSpecular(ColourValue(1.0f, 1.0f, 1.0f, 1.0f));
+            //set the shininess
+            firstPass->setShininess(Real(64.0f));
+        }
+        {
+            //create a material
+            MaterialPtr material = materialManager.create("M_Lighting+OneTexture", resourceGroupName);
+            //get the first technique (rendering method) in the material
+            Technique* firstTechnique = material->getTechnique(0);
+            //get the first pass (layer) in the technique
+            Pass* firstPass = firstTechnique->getPass(0);
+            //set lighting options
+            firstPass->setDiffuse(0.8f, 0.8f, 0.8f, 1.0f);
+            firstPass->setAmbient(0.3f, 0.3f, 0.3f);
+            firstPass->setSpecular(1.0f, 1.0f, 1.0f, 1.0f);
+            firstPass->setShininess(64.0f);
+            firstPass->setSelfIllumination(0.1f, 0.1f, 0.1f);
+            //create a texture unit
+            TextureUnitState* textureUnit = firstPass->createTextureUnitState();
+            //set the file to use for the texture
+            textureUnit->setTextureName("Iron-rusted.png", TEX_TYPE_2D);
+            textureUnit->setTextureCoordSet(0);
+        }
+        {
+            //create a material
+            MaterialPtr material = materialManager.create("M_Lighting+DiffuseMap+LightMap", resourceGroupName);
+            //get the first technique (rendering method) in the material
+            Technique* firstTechnique = material->getTechnique(0);
+            //get the first pass (layer) in the technique
+            Pass* firstPass = firstTechnique->getPass(0);
+            //set lighting options
+            firstPass->setDiffuse(0.8f, 0.8f, 0.8f, 1.0f);
+            firstPass->setAmbient(0.3f, 0.3f, 0.3f);
+            firstPass->setSpecular(1.0f, 1.0f, 1.0f, 1.0f);
+            firstPass->setShininess(64.0f);
+            firstPass->setSelfIllumination(0.1f, 0.1f, 0.1f);
+            //create a texture unit
+            TextureUnitState* textureUnit = firstPass->createTextureUnitState();
+            //set the file to use for the texture
+            textureUnit->setTextureName("Iron-rusted.png", TEX_TYPE_2D);
+            textureUnit->setTextureCoordSet(0);
+            //create a lightmap texture
+            TextureUnitState* textureUnitLightMap = firstPass->createTextureUnitState();
+            textureUnitLightMap->setTextureName("Fur.png", TEX_TYPE_2D);
+            textureUnitLightMap->setTextureCoordSet(1);
+        }
+        //create a vector with all out different materials
+        std::vector< Ogre::String > materialNames;
+        materialNames.push_back("M_NoLighting");
+        materialNames.push_back("M_NoLighting+OneTexture");
+        materialNames.push_back("M_LightingColour");
+        materialNames.push_back("M_Lighting+OneTexture");
+        materialNames.push_back("M_Lighting+DiffuseMap+LightMap");
         //amount of entities to display
-        const int entityNumber = 5;
+        const int entityNumber = materialNames.size();
         SceneNode * nodes[entityNumber];
         for (int iter = 0; iter < entityNumber; iter++) {
             //the entity loaded from the Cube.mesh file
             Entity* entity = scene->createEntity("Cube.mesh");
+            //get the material name
+            const String& materialName = materialNames[iter];
+            //set the material
+            entity->setMaterialName(materialName);
             //create a scene node for the entity
             nodes[iter] = rootSceneNode->createChildSceneNode();
             //attach the entity
             nodes[iter]->attachObject(entity);
             //scale up node
-            nodes[iter]->scale(Vector3(15, 15, 15));
+            nodes[iter]->scale(Vector3(10, 10, 10));
             //move nodes so they don't overlap
-            float offset = (float(1 + iter * 2) - (float(entityNumber)))*20;
+            float offset = (float(1 + iter * 2) - (float(entityNumber)))*15;
             nodes[iter]->translate(offset, offset, -200.0f);
         }
         //while the window hasn't been closed
