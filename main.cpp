@@ -164,7 +164,7 @@ int main() {
             textureUnit->setTextureCoordSet(0);
             //create a lightmap texture
             TextureUnitState* textureUnitLightMap = firstPass->createTextureUnitState();
-            textureUnitLightMap->setTextureName("Fur.png", TEX_TYPE_2D);
+            textureUnitLightMap->setTextureName("Wool.png", TEX_TYPE_2D);
             textureUnitLightMap->setTextureCoordSet(1);
         }
         //create a vector with all out different materials
@@ -174,10 +174,9 @@ int main() {
         materialNames.push_back("M_LightingColour");
         materialNames.push_back("M_Lighting+OneTexture");
         materialNames.push_back("M_Lighting+DiffuseMap+LightMap");
-        //amount of entities to display
-        const int entityNumber = materialNames.size();
-        SceneNode * nodes[entityNumber];
-        for (int iter = 0; iter < entityNumber; iter++) {
+        //create a vector of entities
+        std::vector<SceneNode*> nodes(materialNames.size());
+        for (unsigned int iter = 0; iter < nodes.size(); iter++) {
             //the entity loaded from the Cube.mesh file
             Entity* entity = scene->createEntity("Cube.mesh");
             //get the material name
@@ -191,7 +190,7 @@ int main() {
             //scale up node
             nodes[iter]->scale(Vector3(10, 10, 10));
             //move nodes so they don't overlap
-            float offset = (float(1 + iter * 2) - (float(entityNumber)))*15;
+            float offset = (float(1 + iter * 2) - (float(nodes.size())))*15;
             nodes[iter]->translate(offset, offset, -200.0f);
         }
         //while the window hasn't been closed
@@ -205,7 +204,7 @@ int main() {
             skeleton->root->renderOneFrame();
             //get events
             WindowEventUtilities::messagePump();
-            for (int iter = 0; iter < entityNumber; iter++) {
+            for (unsigned int iter = 0; iter < nodes.size(); iter++) {
                 nodes[iter]->yaw(Radian(0.01f));
                 nodes[iter]->pitch(Radian(0.01f));
             }
